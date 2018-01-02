@@ -1,15 +1,6 @@
 TITLE by Georg GOTTFRIED
 ========================================================
 
-> **Tip**: You will see quoted sections like this throughout the template to
-help you construct your report. Make sure that you remove these notes before
-you finish and submit your project!
-
-> **Tip**: One of the requirements of this project is that your code follows
-good formatting techniques, including limiting your lines to 80 characters or
-less. If you're using RStudio, go into Preferences \> Code \> Display to set up
-a margin line to help you keep track of this guideline!
-
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using in your analysis in this code
 # chunk.
@@ -35,10 +26,6 @@ setwd("~/udacity/DAND/exploratory_data_analysis/eda-course-materials/DAND_EDA/")
 wine <- read.csv("wineQualityWhites.csv")
 ```
 # A short introdcution into the dataset
-> **Tip**: Before you create any plots, it is a good idea to provide a short
-introduction into the dataset that you are planning to explore. Replace this
-quoted text with that general information!
-
 Citation Request:
   This dataset is public available for research. The details are described in [Cortez et al., 2009]. 
   Please include this citation if you plan to use this database:
@@ -61,25 +48,27 @@ Our guiding question is:
 
 # Univariate Plots Section
 
-> **Tip**: In this section, you should perform some preliminary exploration of
-your dataset. Run some summaries of the data and create univariate plots to
-understand the structure of the individual variables in your dataset. Don't
-forget to add a comment after each plot or closely-related group of plots!
-There should be multiple code chunks and text sections; the first one below is
-just to help you get started.
-
+prove that X column is a unique identifier
 ```{r echo=FALSE, Univariate_Plots}
-names(wine)
 str(wine)
-# prove that X column is a unique identifier
+
 summary(wine$X)
 summary(unique(wine$X)) 
-# exclude the unique id
-wine <- wine %>% select(-X)
-#analyse the dependent variable
+```
+
+exclude the unique id X
+```{r echo=FALSE, Univariate_Plots}
+wine <- wine %>% dplyr::selectselect(X)
+```
+
+analyse the dependent variable
+```{r echo=FALSE, Univariate_Plots}
 summary(wine$quality)
-#quality ranges from 3 to 9 having a normal distribution
-#We use a bar chart instead of histogram because of the categorial variable on the x-axis.
+```
+
+quality ranges from 3 to 9 having a normal distribution
+We use a bar chart instead of histogram because of the categorial variable on the x-axis.
+```{r echo=FALSE, Univariate_Plots}
 ggplot(data = wine,
        aes(x = quality)
        ) +
@@ -88,9 +77,11 @@ ggplot(data = wine,
     limits = c(2,10),
     breaks = c(seq(3,9,1))
     )
+```
 
-#convert quality integer to an ordered factor for better analysis
-#Conceptually, factors are variables in R which take on a limited number of different values
+convert quality integer to an ordered factor for better analysis
+Conceptually, factors are variables in R which take on a limited number of different values
+```{r echo=FALSE, Univariate_Plots}
 wine$quality.ord <- ordered(wine$quality)
 wine$quality.bucket <- 
   ordered(cut(wine$quality, breaks = c(0, 4, 7, 10)),
@@ -100,8 +91,10 @@ str(wine)
 summary(wine$quality.bucket)
 
 ggpairs(wine)
+```
 
-#there is a bimodal distribution in residual sugar. This can be explained by the fact that there are dry and sweet white wines available. They taste very different and target different audiences. We will have to consider this in further analasys.
+there is a bimodal distribution in residual sugar. This can be explained by the fact that there are dry and sweet white wines available. They taste very different and target different audiences. We will have to consider this in further analasys.
+```{r echo=FALSE, Univariate_Plots}
 ggplot(data = wine,
        aes(x = residual.sugar)
        ) +
@@ -111,8 +104,11 @@ ggplot(data = wine,
                  ) +
   scale_x_log10(breaks = c(seq(1,5,1), 10, 20, 40, 80))
 summary(wine$residual.sugar)
+```
 
-#I decided to introduce a new variable to split the dataset dry wines and sweet wines
+
+I decided to introduce a new variable to split the dataset dry wines and sweet wines
+```{r echo=FALSE, Univariate_Plots}
 wine$residual.sugar.bucket <- 
   factor(cut(wine$residual.sugar, breaks = c(0, 3.5, 100)),
          labels = c("dry", "sweet")
@@ -137,8 +133,10 @@ ggpairs(wine,
                      )
 )
 names(wine)
+```
 
-#the density of sweet wine is higher than the density of dry wine
+the density of sweet wine is higher than the density of dry wine
+```{r echo=FALSE, Univariate_Plots}
 ggplot(wine,
        aes(x = density)
        ) +
@@ -149,16 +147,19 @@ ggplot(wine,
                          quantile(wine$density, .99)
                          )
   )
+```
 
-
-#alcohol of dry wiNE is higher than that of sweet wine
+alcohol of dry wiNE is higher than that of sweet wine
+```{r echo=FALSE, Univariate_Plots}
 ggplot(wine,
        aes(x = alcohol)
        ) +
   geom_histogram(binwidth = .1) +
   facet_wrap(~ wine$residual.sugar.bucket, ncol=1)
+```
 
-#we get a better distribution of chlorides on a log10 scale
+we get a better distribution of chlorides on a log10 scale
+```{r echo=FALSE, Univariate_Plots}
 ggplot(wine,
        aes(x = chlorides)
        ) +
@@ -166,24 +167,13 @@ ggplot(wine,
   facet_wrap(~ wine$residual.sugar.bucket, ncol=1) +
   scale_x_log10()
 
-#
 wine$chlorides.log <- log10(wine$chlorides)
 
 str(wine)
-
 ```
 
-> **Tip**: Make sure that you leave a blank line between the start / end of
-each code block and the end / start of your Markdown text so that it is
-formatted nicely in the knitted text. Note as well that text on consecutive
-lines is treated as a single space. Make sure you have a blank line between
-your paragraphs so that they too are formatted for easy readability.
 
 # Univariate Analysis
-
-> **Tip**: Now that you've completed your univariate explorations, it's time to
-reflect on and summarize what you've found. Use the questions below to help you
-gather your observations and add your own if you have other thoughts!
 
 ### What is the structure of your dataset?
 The dependent variable is the quality with integer rates from 3 to 9 in the 
@@ -221,12 +211,6 @@ I used the log10 algorithm on residual.sugar to detect the bimodal distribution.
 
 # Bivariate Plots Section
 
-> **Tip**: Based on what you saw in the univariate plots, what relationships
-between variables might be interesting to look at in this section? Don't limit
-yourself to relationships between a main output feature and one of the
-supporting variables. Try to look at relationships between supporting variables
-as well.
-
 ```{r echo=FALSE, Bivariate_Plots}
 ggpairs(wine,
         upper = list(continuous = 
@@ -236,7 +220,10 @@ ggpairs(wine,
                      )
 )
 
-#chlorides seem to be negative corelated to quality
+```
+
+chlorides seem to be negative corelated to quality
+```{r echo=FALSE, Bivariate_Plots}
 ggplot(data = wine,
        aes(x = chlorides, y = quality.bucket)
        ) +
@@ -244,9 +231,10 @@ ggplot(data = wine,
              position = position_jitter()
              ) +
   facet_wrap (~ residual.sugar.bucket)
+```
 
-#There seems to be a certain band of total.sulfur.dioxide required (50 to 220) to get an outstanding quality grade
-
+There seems to be a certain band of total.sulfur.dioxide required (50 to 220) to get an outstanding quality grade
+```{r echo=FALSE, Bivariate_Plots}
 wine$bound.sulfur.dioxide <- 
   wine$total.sulfur.dioxide - wine$free.sulfur.dioxide
 
@@ -260,7 +248,11 @@ ggplot(data = wine,
   scale_y_continuous(breaks = c(seq(0,400,50)),
                      minor_breaks = c(seq(70,220,10))
                      )
-#even stronger seems to be the relationship to bound.sulfur.dioxide. That's why we build a new variable
+
+```
+
+even stronger seems to be the relationship to bound.sulfur.dioxide.
+```{r echo=FALSE, Bivariate_Plots}
 ggplot(data = wine,
        aes(x = quality.bucket, y = bound.sulfur.dioxide)
        ) +
@@ -273,8 +265,6 @@ ggplot(data = wine,
 ```
 
 # Bivariate Analysis
-> **Tip**: As before, summarize what you found in your bivariate explorations
-here. Use the questions below to guide your discussion.
 
 ### Talk about some of the relationships you observed in this part of the \
 investigation. How did the feature(s) of interest vary with other features in \
@@ -303,17 +293,8 @@ In addition there is also a positive relationship between free.sulfur.dioxide an
 strong positive relationship between density and residual sugar
 
 # Multivariate Plots Section
-
-> **Tip**: Now it's time to put everything together. Based on what you found in
-the bivariate plots section, create a few multivariate plots to investigate
-more complex interactions between variables. Make sure that the plots that you
-create here are justified by the plots you explored in the previous section. If
-you plan on creating any mathematical models, this is the section where you
-will do that.
-
+ignore density from further analysis
 ```{r echo=FALSE, Multivariate_Plots}
-#ignore density from further analysis
-wine <- select(wine, -density)
 str(wine)
 
 ggplot(data = wine,
@@ -336,7 +317,9 @@ ggpairs(dry.wine,
                             color = "black")
                      )
 )
+
 names(dry.wine)
+
 ggplot(data = dry.wine,
        aes(x = chlorides.log, 
            y = citric.acid,
@@ -376,7 +359,7 @@ ggplot(data = sweet.wine,
                       palette = 'RdYlBu'
                       ) +
   scale_x_continuous(limits = c(0,25))
-names(sweet.wine)
+
 ggplot(data = wine,
        aes(x = pH, 
            y = citric.acid,
@@ -391,64 +374,14 @@ ggplot(data = wine,
   scale_y_continuous(
     limit = c(0, 1)
     ) +
-  facet_wrap(~ residual.sugar.bucket)
+  facet_wrap(~ residual.sugar.bucket, ncol = 1)
 
 
 ?scale_colour_brewer
 #BrBG, PiYG, PRGn, PuOr, RdBu, RdGy, RdYlBu, RdYlGn, Spectral
 #Accent, Dark2, Paired, Pastel1, Pastel2, Set1, Set2, Set3
-?geom_point
-
-#random forest model
-#for modeling I've consulted https://www.r-bloggers.com/predicting-wine-quality-using-random-forests/
-wine$taste.top <- 
-  factor(cut(wine$quality, breaks = c(0, 7, 10)),
-          labels = (c('N','Y'))
-          )
-wine$taste.bad <- 
-  factor(cut(wine$quality, breaks = c(0, 4, 10)),
-          labels = (c('Y','N'))
-          )
-dplyr::select(wine, quality.ord, taste.top, taste.bad)
-table(wine$taste.bad, wine$taste.top)
-str(wine)
-dry.wine <- filter(wine, residual.sugar.bucket == 'dry')
-sweet.wine <- filter(wine, residual.sugar.bucket == 'sweet')
-table(dry.wine$taste.bad, dry.wine$taste.top)
-
-
-
-#https://www.analyticsvidhya.com/blog/2015/11/beginners-guide-on-logistic-regression-in-r/
-#logistic regression model
-
-names(wine)
-
-#model top wine
-m1 <- glm (I(taste.top) ~ I(alcohol),
-              data = dry.wine, 
-              family = binomial
-              )
-m2 <- update(m1, ~ . + free.sulfur.dioxide)
-m3 <- update(m2, ~ . + residual.sugar)
-m4 <- update(m3, ~ . + citric.acid)
-m5 <- update(m4, ~ . + pH)
-m6 <- update(m5, ~ . + chlorides.log)
-mtable(m1, m2, m3, m4, m5, m6)
-
-#test bad wine
-m1 <- glm (I(taste.bad) ~ I(alcohol),
-              data = dry.wine, 
-              family = binomial
-              )
-m2 <- update(m1, ~ . + free.sulfur.dioxide)
-m3 <- update(m2, ~ . + residual.sugar)
-m4 <- update(m3, ~ . + citric.acid)
-m5 <- update(m4, ~ . + pH)
-m6 <- update(m5, ~ . + chlorides.log)
-mtable(m1, m2, m3, m4, m5, m6)
-
-
 ```
+
 
 # Multivariate Analysis
 
@@ -458,8 +391,62 @@ looking at your feature(s) of interest?
 
 ### Were there any interesting or surprising interactions between features?
 
+
 ### OPTIONAL: Did you create any models with your dataset? Discuss the \
 strengths and limitations of your model.
+
+I decided to go for a logistic regression model.
+Well the idea is either to have an outstanding wine or at least avoid a bad taste. That's a binominal dependent variable which would fit the logistic regression model
+```
+
+https://www.analyticsvidhya.com/blog/2015/11/beginners-guide-on-logistic-regression-in-r/
+```{r echo=FALSE, Multivariate_Plots}
+wine$taste.top <- 
+  factor(cut(wine$quality, breaks = c(0, 7, 10)),
+          labels = (c('N','Y'))
+          )
+
+wine$taste.bad <- 
+  factor(cut(wine$quality, breaks = c(0, 4, 10)),
+          labels = (c('Y','N'))
+          )
+
+dplyr::select(wine, quality.ord, taste.top, taste.bad)
+table(wine$taste.bad, wine$taste.top)
+
+str(wine)
+dry.wine <- filter(wine, residual.sugar.bucket == 'dry')
+sweet.wine <- filter(wine, residual.sugar.bucket == 'sweet')
+table(dry.wine$taste.bad, dry.wine$taste.top)
+table(sweet.wine$taste.bad, sweet.wine$taste.top)
+
+
+#model top wine
+names(wine)
+
+m1 <- glm (I(taste.top) ~ I(alcohol),
+              data = dry.wine, 
+              family = binomial
+              )
+m2 <- update(m1, ~ . + free.sulfur.dioxide)
+m3 <- update(m2, ~ . + I(log10(residual.sugar)))
+m4 <- update(m3, ~ . + citric.acid)
+m5 <- update(m4, ~ . + pH)
+m6 <- update(m5, ~ . + chlorides.log)
+mtable(m1, m2, m3, m4, m5, m6)
+
+#test bad wine
+m1 <- glm (I(taste.bad) ~ I(alcohol),
+              data = sweet.wine, 
+              family = binomial
+              )
+m2 <- update(m1, ~ . + free.sulfur.dioxide)
+m3 <- update(m2, ~ . + I(log10(residual.sugar)))
+m4 <- update(m3, ~ . + citric.acid)
+m5 <- update(m4, ~ . + pH)
+m6 <- update(m5, ~ . + chlorides.log)
+mtable(m1, m2, m3, m4, m5, m6)
+```
 
 ------
 
@@ -489,11 +476,15 @@ p1 +
   ggtitle("residual sugar") +
   xlab("residual sugar") +
   ylab("nr of tastings")
-  
-?ggtitle
-summary(wine$residual.sugar)
+```
 
-ggplot(data = dry.wine,
+### Description One
+
+
+### Plot Two
+
+```{r echo=FALSE, Plot_Two}
+ggplot(data = wine,
       aes(x = alcohol, 
           y = pH,
           color = quality.ord)
@@ -501,23 +492,35 @@ ggplot(data = dry.wine,
   geom_point() +
   scale_colour_brewer(type = 'div',
                       palette = 'RdYlBu'
-                      )
-```
-
-### Description One
+                      ) +
+facet_wrap(~ residual.sugar.bucket, ncol = 1)
 
 
-### Plot Two
-```{r echo=FALSE, Plot_Two}
-ggplot(data = dry.wine,
+ggplot(data = filter(wine, quality.bucket != 'average'),
+      aes(x = free.sulfur.dioxide, 
+          y = chlorides.log,
+          color = quality.bucket
+          )
+      ) +
+  geom_point() + #aes(size = residual.sugar)) +
+  scale_colour_brewer(type = 'qual'
+#                      palette = 'RdBu'
+                      ) +
+  facet_wrap(~ residual.sugar.bucket, ncol = 1) +
+  scale_x_log10()
+
+
+ggplot(data = wine,
       aes(x = alcohol, 
-          y = citric.acid,
+          y = residual.sugar,
           color = quality.ord)
       ) +
   geom_point() +
   scale_colour_brewer(type = 'div',
                       palette = 'RdYlBu'
-                      )
+                      ) +
+  scale_y_continuous(limit= c(0,quantile(wine$residual.sugar, .95))) +
+  facet_wrap(~ residual.sugar.bucket, ncol = 1)
 ```
 
 ### Description Two
