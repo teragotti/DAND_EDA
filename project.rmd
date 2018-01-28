@@ -79,6 +79,146 @@ ggplot(data = wine,
     )
 ```
 
+residual sugar is heavily skewed. A bimodal distribution reveals a group of fully fermented dry wines and another group of rather sweet wines:
+
+```{r echo=FALSE, warning=FALSE, Univariate_Plots_Hist0}
+ggplot(data = wine,
+       aes(x = residual.sugar)
+       ) +
+  geom_histogram(bins=50, fill = 'darkgreen') +
+  geom_vline(xintercept = mean(wine$residual.sugar), color="red", size = 2, linetype=3) + 
+  geom_vline(xintercept = median(wine$residual.sugar), color="black", size = 2, linetype=5)
+
+```
+
+
+There is also a number of low alcohol wines between 9 and 10 %vol of alchol which result in a skewed distribution of the observations:
+
+```{r echo=FALSE, warning=FALSE, Univariate_Plots_Hist1}
+ggplot(data = wine,
+       aes(x = alcohol)
+       ) +
+  geom_histogram(bins = 30, fill = 'darkgreen') +
+  scale_x_continuous(
+    breaks = c(seq(7,14,1))
+    ) + 
+  geom_vline(xintercept = mean(wine$alcohol), color="red", size = 2, linetype=3) + 
+  geom_vline(xintercept = median(wine$alcohol), color="black", size = 2, linetype=5)
+```
+
+pH has an almost perfect normal distribution:
+
+```{r echo=FALSE, warning=FALSE, Univariate_Plots_Hist2}
+ggplot(data = wine,
+       aes(x = pH)
+       ) +
+  geom_histogram(fill = 'darkgreen') +
+  scale_x_continuous(
+    ) + 
+  geom_vline(xintercept = mean(wine$pH), color="red", size = 2, linetype=3) + 
+  geom_vline(xintercept = median(wine$pH), color="black", size = 2, linetype=5)
+
+```
+
+
+chlorides is skewed to the right because the mean value is higher than the median. We may have to normalize this using a logarithmic scale
+
+```{r echo=FALSE, warning=FALSE, Univariate_Plots_Hist3}
+ggplot(data = wine,
+       aes(x = chlorides)
+       ) +
+  geom_freqpoly(bins = 70, color = 'darkgreen') + 
+  geom_vline(xintercept = mean(wine$chlorides), color="red", size = 1, linetype=3) + 
+  geom_vline(xintercept = median(wine$chlorides), color="black", size = 1, linetype=5)
+```
+
+chlorides transformed on a log10 scale for better normal distribution.
+
+```{r echo=FALSE, warning=FALSE, Univariate_Plots_Hist3b}
+ggplot(data = wine,
+       aes(x = chlorides)
+       ) +
+  geom_histogram(bins = 70, fill = 'darkgreen') +
+  scale_x_log10() + 
+  geom_vline(xintercept = mean(wine$chlorides), color="red", size = 1, linetype=3) + 
+  geom_vline(xintercept = median(wine$chlorides), color="black", size = 1, linetype=5) 
+```
+
+free.sulfur.dioxide has a few outliers on the right:
+
+```{r echo=FALSE, warning=FALSE, Univariate_Plots_Hist4}
+ggplot(data = wine,
+       aes(x = free.sulfur.dioxide)
+       ) +
+  geom_histogram(bins = 70, fill = 'darkgreen') +
+  geom_vline(xintercept = mean(wine$free.sulfur.dioxide), color="red", size = 2, linetype=3) + 
+  geom_vline(xintercept = median(wine$free.sulfur.dioxide), color="black", size = 2, linetype=5)
+```
+
+
+citric acid has a slightly skewed distribution with a few outliers:
+
+```{r echo=FALSE, warning=FALSE, Univariate_Plots_Hist5}
+ggplot(data = wine,
+       aes(x = citric.acid)
+       ) +
+  geom_histogram(bins = 50, fill = 'darkgreen') +
+  geom_vline(xintercept = mean(wine$citric.acid), color="red", size = 2, linetype=3) + 
+  geom_vline(xintercept = median(wine$citric.acid), color="black", size = 2, linetype=5)
+```
+
+
+
+
+Handle Feedback: 
+"For the univariate section, it is important to include a simple histogram ( continues feature) or a bar plot ( categorical feature) to depict the count distribution for each feature that is included in the analysis. That will allow you to examine the distribution, identify outliers and make changes to the dataset before starting the analysis.
+
+Since you are using for the analysis the modified quality rating (but also sweet and dry), it is important to expand the univariate section to depict the count distribution for this modified feature.
+
+Please note that the univariate section should include histograms that depict a single feature. The figures that depict the distribution of different categories can be included in the bivariate sections."
+
+establishing the new buckets dry/sweet as well as quality bad/average/outstanding splits the data set in a large section for average wines and small sections of about 100 observations for bad and outstanding wines, each.
+
+
+
+
+# Univariate Analysis
+
+### What is the structure of your dataset?
+The dependent variable is the quality with integer rates from 3 to 9 in the 
+given dataset. The limited number of grades make this a candidate for an 
+ordered factor.
+The chemical variables are all continuous numbers which contain often outliers
+
+### What is/are the main feature(s) of interest in your dataset?
+The main features of interest are
+
++ residual sugar has a bimodal distribution, we may differ between sweet and dry wines
++ to get rid of the outliers
++ to focus on the dependent variable quality
+
+
+### What other features in the dataset do you think will help support your \
+investigation into your feature(s) of interest?
+
++ to handle the skewed distributions if necessary
++ possibly transform the quality in another way 
+
+### Did you create any new variables from existing variables in the dataset?
+
+### Of the features you investigated, were there any unusual distributions? \
+Did you perform any operations on the data to tidy, adjust, or change the form \
+of the data? If so, why did you do this?
++ residual sugar has a bimodal distribution, we may differ between sweet and dry wines
+
+I omited the X column, because it's just a unique identifier of the observation
+which is not relevant for the further data analysis
+I used the log10 algorithm on residual.sugar to detect the bimodal distribution. While nearly all of the sugar gets ferment for dry wines the residual sugar for sweet wines vary quite a lot.
+
+
+# Bivariate Plots Section
+
+
 convert quality integer to an ordered factor for better analysis
 Conceptually, factors are variables in R which take on a limited number of different values
 
@@ -87,6 +227,7 @@ wine$quality.ord <- ordered(wine$quality)
 str(wine$quality)
 str(wine$quality.ord)
 ```
+
 
 Introduce new variable quality.bucket: bad, average and outstanding
 ```{r echo=FALSE, warning=FALSE, Univariate_Plots_quality_buckets}
@@ -97,7 +238,9 @@ wine$quality.bucket <-
 summary(wine$quality.bucket)
 ```
 
+
 There is a bimodal distribution in residual sugar. This can be explained by the fact that there are dry (completely fermented) and sweet white wines available. They taste very different and target different audiences. We will have to consider this in further analysis.
+
 ```{r echo=FALSE, warning=FALSE, Univariate_Plots_bimodal_histogram}
 ggplot(data = wine,
        aes(x = residual.sugar)
@@ -120,19 +263,6 @@ wine$residual.sugar.bucket <-
 str(wine)
 
 theme_set(theme_minimal(10))
-
-#ggpairs(filter(wine,residual.sugar.bucket == "sweet"),
-#        upper = list(continuous = wrap(ggally_cor,
-#                                       size = 2, 
-#                                       color = "black")
-#                     )
-#        )
-#ggpairs(filter(wine,residual.sugar.bucket == "dry"),
-#        upper = list(continuous = wrap(ggally_cor,
-#                                       size = 2, 
-#                                       color = "black")
-#                     )
-#        )
 ```
 
 Density of sweet wine is higher than the density of dry wine:
@@ -148,6 +278,8 @@ ggplot(wine,
                          )
   )
 ```
+
+
 
 alcohol of dry wine is higher than that of sweet wine
 ```{r echo=FALSE, warning=FALSE, Univariate_Plots_alcohol_histogram}
@@ -172,78 +304,8 @@ wine$chlorides.log <- log10(wine$chlorides)
 str(wine)
 ```
 
-Handle Feedback: 
-"For the univariate section, it is important to include a simple histogram ( continues feature) or a bar plot ( categorical feature) to depict the count distribution for each feature that is included in the analysis. That will allow you to examine the distribution, identify outliers and make changes to the dataset before starting the analysis.
-
-Since you are using for the analysis the modified quality rating (but also sweet and dry), it is important to expand the univariate section to depict the count distribution for this modified feature.
-
-Please note that the univariate section should include histograms that depict a single feature. The figures that depict the distribution of different categories can be included in the bivariate sections."
-
-establishing the new buckets dry/sweet as well as quality bad/average/outstanding splits the data set in a large section for average wines and small sections of about 100 observations for bad and outstanding wines, each.
-```{r echo=FALSE, warning=FALSE, Univariate_Plots_2nd_submission}
-ggplot(wine,
-       aes(x = quality.bucket)
-       ) +
-  geom_bar() +
-  facet_wrap(~residual.sugar.bucket) +
-  scale_y_continuous(breaks = seq(0,3000,200))
-```
-
-
-
-# Univariate Analysis
-
-### What is the structure of your dataset?
-The dependent variable is the quality with integer rates from 3 to 9 in the 
-given dataset. The limited number of grades make this a candidate for an 
-ordered factor.
-The chemical variables are all continuous numbers which contain often outliers
-
-### What is/are the main feature(s) of interest in your dataset?
-The main features of interest are
-
-+ to differ between sweet and dry wines
-+ to get rid of the outliers
-+ to focus on the dependent variable quality
-
-
-### What other features in the dataset do you think will help support your \
-investigation into your feature(s) of interest?
-
-+ to handle the skewed distributions if necessary
-+ possibly transform the quality in another way 
-
-### Did you create any new variables from existing variables in the dataset?
-+ I added a quality.bucket with just three categories (bad, avarge, outstanding) 
-to analyse further if there is something that makes a wine really bad or realy 
-good apart from average.
-+ I added a factor residual.sugar.bucket to accomodate for sweet and dry wines
-
-### Of the features you investigated, were there any unusual distributions? \
-Did you perform any operations on the data to tidy, adjust, or change the form \
-of the data? If so, why did you do this?
-
-I omited the X column, because it's just a unique identifier of the observation
-which is not relevant for the further data analysis
-I used the log10 algorithm on residual.sugar to detect the bimodal distribution. While nearly all of the sugar gets ferment for dry wines the residual sugar for sweet wines vary quite a lot.
-
-
-# Bivariate Plots Section
-
-
-```{r echo=FALSE, warning=FALSE, Bivariate_Plots_ggpairs}
-#Using ggpiars for an overview:
-#ggpairs(wine,
-#        upper = list(continuous = 
-#                       wrap(ggally_cor,
-#                            size = 2, 
-#                            color = "black")
-#                     )
-#)
-
-```
-
 Chlorides seem to be negative corelated to quality:
+
 ```{r echo=FALSE, warning=FALSE, Bivariate_Plots_chlorides_vs_quality}
 ggplot(data = wine,
        aes(x = chlorides, y = quality.bucket)
@@ -258,6 +320,7 @@ Use Feedback:
 "Optional, for the jitter plots, you can also add markers to show the mean values and box plot, that will make the figure more informative"
 
 There seems to be a certain band of total.sulfur.dioxide required (50 to 220) to get an outstanding quality grade:
+
 ```{r echo=FALSE, warning=FALSE, Bivariate_Plots_total_sulfur_dioxide}
 wine$bound.sulfur.dioxide <- 
   wine$total.sulfur.dioxide - wine$free.sulfur.dioxide
@@ -282,6 +345,7 @@ ggplot(data = wine,
 ```
 
 Even stronger seems to be the relationship to bound.sulfur.dioxide:
+
 ```{r echo=FALSE, warning=FALSE, Bivariate_Plots_bound_sulfur_dioxide}
 ggplot(data = wine,
        aes(x = quality.bucket, y = bound.sulfur.dioxide)
@@ -306,6 +370,13 @@ sweet wines allow a slightly higher band
 ### Did you observe any interesting relationships between the other features \
 (not the main feature(s) of interest)?
 
+
++ I added a quality.bucket with just three categories (bad, avarge, outstanding) 
+to analyse further if there is something that makes a wine really bad or realy 
+good apart from average.
++ I added a factor residual.sugar.bucket to accomodate for sweet and dry wines
+
+
 Density, residual sugar and alcohol seem to have an interrelationship. This is also confirmed in the data documentation:
 'the density of water is close to that of water depending on the percent alcohol and sugar content'
 
@@ -319,7 +390,6 @@ So we could drop density from further analysis
 
 In addition there is also a positive relationship between free.sulfur.dioxide and total.sulfur.dioxide
 
-
 ### What was the strongest relationship you found?
 strong positive relationship between density and residual sugar
 
@@ -329,7 +399,7 @@ Handle Feedback:
 
 For the bivariate and multivariate sections, the discussion should also include reasonings, why you choose to include the analysis in the report? what did you expect to find? what are your insights?
 
-The analysis includes many figures that depict comparison, trends and relations between features. It is important to include the relevant statistics in the discussion under each chart. You can include the mean median and quartiles to quantify the distribution under the histograms summary (red.wine$alcohol) . The relevant correlation value under the corresponding chart to quantify the relation in the bivariate section cor (red.wine$alcohol, red.wine$pH).
+The analysis includes many figures that depict comparison, trends and relations between features. It is important to include the relevant statistics in the discussion under each chart. You can include the mean median and quartiles to quantify the distribution under the histograms summary (red.wine alcohol) . The relevant correlation value under the corresponding chart to quantify the relation in the bivariate section cor (red.wine alcohol, red.wine pH).
 
 For the multivariate scatter plots, it is important to use a sequential color table that express the fact that the feature is ordered and categorical, in addition, I strongly encourage you to add a regression line for each category to depict the separation. 
 "
@@ -337,6 +407,7 @@ For the multivariate scatter plots, it is important to use a sequential color ta
 Finding relationships between quality and other variables:
 
 Low free sulfur seems to favour bad quality but there is just a weak positive correlation between free and bound sulfur:
+
 ```{r echo=FALSE, warning=FALSE, Multivariate_Plots_analyse_sweet_and_dry_separate}
 ggplot(data = wine,
        aes(x = free.sulfur.dioxide,
@@ -351,7 +422,8 @@ cor (wine$free.sulfur.dioxide, wine$bound.sulfur.dioxide)
 
 
 
-a low number of chlorides  with citric acid above 0.2 favours good quality wine.
+a low number of chlorides  with citric acid above 0.2 favours good quality wine:
+
 ```{r echo=FALSE, warning=FALSE, Multivariate_Plots_02}
 dry.wine <- wine %>% 
   filter(residual.sugar.bucket == 'dry')
@@ -371,7 +443,10 @@ ggplot(data = dry.wine,
          )
 cor (dry.wine$chlorides.log, dry.wine$citric.acid)
 ```
+
+
 When we focus on dry wine we can see that low alcohol and residual sugar under 1.5 g/l results in rather bad quality while high alcohol and residual sugar between 1.5 and 3 g/l favours outstanding quality
+
 ```{r echo=FALSE, warning=FALSE, Multivariate_Plots_03}
 ggplot(data = dry.wine,
        aes(x = residual.sugar, 
@@ -390,8 +465,35 @@ ggplot(data = dry.wine,
   facet_wrap(~ quality.bucket, ncol=1)
 ```
 
+Especially when it comes to sweet wines, there is a strong positive relationship between residual sugar and density:
+
+```{r echo=FALSE, warning=FALSE, Multivariate_Plots_03b}
+ggplot(data = wine,
+             aes(x = density, 
+                 y = residual.sugar,
+                 color = quality.ord)
+             ) +
+  geom_point() +
+  scale_colour_brewer(type = 'div',
+                      palette = 'RdYlBu'
+                      ) +
+  facet_wrap(~ residual.sugar.bucket, ncol = 1) +
+  scale_x_continuous(limits = 
+                       c(quantile(wine$density, .01),
+                         quantile(wine$density, .99)
+                         )
+  ) +
+  scale_y_log10(limits = 
+                       c(quantile(wine$residual.sugar, .01),
+                         quantile(wine$residual.sugar, .99)
+                         )
+  )
+cor(wine$residual.sugar, wine$density)
+```
+
 As for the sweet wines high alcohol above 11 vol% results in rather outstanding quality.
 There is no clear picture if a certain residual sugar favours good or bad quality wine.
+
 ```{r echo=FALSE, warning=FALSE, Multivariate_Plots_04}
 ggplot(data = sweet.wine,
        aes(x = residual.sugar, 
@@ -406,8 +508,10 @@ ggplot(data = sweet.wine,
                       ) +
   scale_x_continuous(limits = c(0,25))
 ```
+
 dry wines with pH value of 3.3 to 3.6 result in rather outstanding wines
 For sweet wines a citric acid between .25 and .50 allows also outstanding qulity for lower pH values down to 2.9
+
 ```{r echo=FALSE, warning=FALSE, Multivariate_Plots_05}
 ggplot(data = wine,
        aes(x = pH, 
@@ -425,10 +529,21 @@ ggplot(data = wine,
     ) +
   facet_wrap(~ residual.sugar.bucket, ncol = 1)
 
+```
 
-#?scale_colour_brewer
-#BrBG, PiYG, PRGn, PuOr, RdBu, RdGy, RdYlBu, RdYlGn, Spectral
-#Accent, Dark2, Paired, Pastel1, Pastel2, Set1, Set2, Set3
+Different observations between outstanding and bad wine.
+High chlorides and low alcohol favour bad wines.
+```{r echo=FALSE, warning=FALSE, MVariant}
+ggplot(data = filter(wine, quality.bucket != 'average'),
+             aes(x = chlorides, 
+                 y = alcohol,
+                 color = free.sulfur.dioxide,
+                 fill = quality.bucket
+                 )
+             ) +
+  geom_point(size = 3) + 
+  stat_ellipse(geom = "polygon", alpha = 0.2) +
+  scale_x_log10()
 ```
 
 
@@ -451,6 +566,7 @@ I decided to go for a logistic regression model.
 Well the idea is either to have an outstanding wine or at least avoid a bad taste. That's a binominal dependent variable which would fit the logistic regression model. Therefore I create the new binary variables taste.top and taste.bad
 
 source: https://www.analyticsvidhya.com/blog/2015/11/beginners-guide-on-logistic-regression-in-r/
+
 ```{r echo=FALSE, warning=FALSE, model_prepare}
 wine$taste.top <- 
   factor(cut(wine$quality, breaks = c(0, 7, 10)),
@@ -535,7 +651,7 @@ p1 +
 There is a bimodal distribution in residual sugar. This can be explained by the fact that there are dry (completly fermented) and sweet white wines available. They taste very different and target different audiences. We will have to consider this in further analysis.
 
 ### Plot Two
-Feedback: "For final plot 2, including more than 3 features ina single figure might be difficult to interpret in this dataset. In this case, it is difficult to separate the different alcohol percentage. Please consider the following instead."
+Feedback: "For final plot 2, including more than 3 features in a single figure might be difficult to interpret in this dataset. In this case, it is difficult to separate the different alcohol percentage. Please consider the following instead."
 
 ```{r echo=FALSE, warning=FALSE, Plot_Two}
 p2 <- ggplot(data = filter(wine, quality.bucket != 'average'),
@@ -546,21 +662,16 @@ p2 <- ggplot(data = filter(wine, quality.bucket != 'average'),
                  )
              ) +
   geom_point(alpha = .8, size = 1.5) + 
-#  facet_wrap(~ residual.sugar.bucket, ncol = 2) +
   scale_fill_brewer(type = 'seq',
                     guide = guide_legend(title = 'quality'), palette = "Set1"
                     ) +
-  stat_ellipse(geom = "polygon", alpha = 0.2)
-#  scale_x_log10(breaks = c(0,10,25,50,100,300)) +
- # scale_y_log10(breaks = c(0,0.02,0.03,0.04,0.05,0.06,0.07,0.1,0.2,0.3))
+  stat_ellipse(geom = "polygon", alpha = 0.2) +
+  scale_x_log10(breaks = c(0.015, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2), limits=c(0.015, 0.1)) 
 
 p2 +
-  ggtitle("free sulfur and chlorides") +
-  xlab("free sulfur dioxide (mg/l)") +
-  ylab("log10 chlorides (g/l)")
-
-
-
+  ggtitle("Alcohol and chlorides") +
+  xlab("chlorides (g/l)") +
+  ylab("Alcohol (% by volume)")
 ```
 
 ### Description Two
@@ -593,10 +704,11 @@ p3 +
                          ),
                 breaks = c(1,3.5,10,20,50)
   ) +
-  geom_smooth(method = 'lm', color = 'black') +
+  geom_smooth(method = 'lm', se = TRUE, size=1, color = 'black') +
   ggtitle("residual sugar relates to density") +
   xlab("density [g/cm^3]") +
   ylab("log10 residual sugar [g/l]")
+
 ```
 
 ### Description Three
